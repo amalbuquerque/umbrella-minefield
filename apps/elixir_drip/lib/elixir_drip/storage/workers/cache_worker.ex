@@ -3,9 +3,12 @@ defmodule ElixirDrip.Storage.Workers.CacheWorker do
   require Logger
 
   @expire_time 60_000
+
   def start_link(media_id, content) do
-    GenServer.start_link(__MODULE__, content, name: {:global, {:cache, media_id}})
+    GenServer.start_link(__MODULE__, content, name: name_for(media_id))
   end
+
+  def name_for(media_id), do: {:global, {:cache, media_id}}
 
   def init(content) do
     timer = Process.send_after(self(), :expire, @expire_time)
